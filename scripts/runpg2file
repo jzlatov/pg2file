@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+import sys
+import os
+import errno
+import datetime
+reload(sys)
+sys.setdefaultencoding("utf-8") # @UndefinedVariable
+
+import argparse
+try:
+    from pg2file import WriteAll
+except:
+    sys.path.append(os.path.abspath('../'))
+    from pg2file import WriteAll # @UnresolvedImport
+
+def TryPath(path):
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                print("Couldn't create directory {0}.".format(path))
+                sys.exit(1)
+    return path
+
+if __name__ == '__main__':
+    import logging
+    logging.basicConfig()
+    #logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+    parser = argparse.ArgumentParser(description='Utility for simple saving postgresql database schema(no data) to separe files in folders structure.')
+    parser.add_argument('host', nargs='?',  help='Database host')
+    parser.add_argument('database', nargs='?',  help='Database name')
+    parser.add_argument('user', nargs='?',  help='Database user name')
+    parser.add_argument('password', nargs='?',  help='Database user password')
+    parser.add_argument('path', nargs='?',  help='Output directory')
+
+    parser.add_argument('--port', nargs='?', help='Database port')
+    parser.add_argument('--timestamp', action='store_true', help='Add first folder with timestamp name')
+    
+    args = parser.parse_args()
+    
+    if args.host and args.database and args.path and args.user and args.password:
+        savePath = TryPath(os.path.join(args.path, datetime.datetime.now().strftime("%Y%m%d_%H%M") if args.timestamp else "", args.host, args.database))
+        WriteAll(args.host + (":" + args.port if args.port else ""), args.database, args.user, args.password, savePath)
+    else:
+        print parser.print_usage()
