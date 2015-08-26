@@ -16,7 +16,7 @@ setup(
     name='pg2file',
     version='0.1.0',
     description="pg2file save PostgreSQL database objects to separate files.",
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     author='Jiří Zlatov',
     author_email='jiri.zlatov@gmail.com',
     url='https://plus.google.com/+Ji%C5%99%C3%ADZlatov/',
